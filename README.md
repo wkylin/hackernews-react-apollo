@@ -41,3 +41,5 @@ pnpm dev:server
 ```
 
 The backend listens on `http://localhost:4000` locally and is intended to run behind `https://api.wkylin.cn` in production.
+
+Deployment examples are in `deploy/`.

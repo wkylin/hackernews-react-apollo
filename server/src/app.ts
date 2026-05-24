@@ -16,13 +16,19 @@ const typeDefs = readFileSync(join(__dirname, 'schema.graphql'), 'utf8')
 const pubsub = createPubSub()
 
 function createApp() {
-  const frontendOrigins = ['http://localhost:3000', process.env.FRONTEND_ORIGIN].filter(
-    Boolean
-  ) as string[]
+  const frontendOrigins = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://hacker.wkylin.cn',
+    ...(process.env.FRONTEND_ORIGINS || process.env.FRONTEND_ORIGIN || '')
+      .split(',')
+      .map(origin => origin.trim())
+      .filter(Boolean),
+  ]
 
   return createYoga({
     cors: {
-      origin: frontendOrigins,
+      origin: Array.from(new Set(frontendOrigins)),
       credentials: true,
       allowedHeaders: ['Content-Type', 'Authorization'],
       methods: ['GET', 'POST', 'OPTIONS'],
