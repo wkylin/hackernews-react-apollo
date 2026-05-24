@@ -1,0 +1,40 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
+  links    Link[]
+  votes    Vote[]
+}
+
+model Link {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  description String
+  url         String
+  postedById  String?
+  postedBy    User?    @relation(fields: [postedById], references: [id])
+  votes       Vote[]
+
+  @@index([postedById])
+}
+
+model Vote {
+  id     String @id @default(cuid())
+  linkId String
+  userId String
+  link   Link   @relation(fields: [linkId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([linkId, userId])
+  @@index([userId])
+}

@@ -1,32 +1,38 @@
 async function feed(parent, args, context) {
-  const count = await context.prisma
-    .linksConnection({
-      where: {
+  const where = args.filter
+    ? {
         OR: [
-          { description_contains: args.filter },
-          { url_contains: args.filter },
+          { description: { contains: args.filter } },
+          { url: { contains: args.filter } },
         ],
-      },
-    })
-    .aggregate()
-    .count();
-  const links = await context.prisma.links({
-    where: {
-      OR: [
-        { description_contains: args.filter },
-        { url_contains: args.filter },
-      ],
-    },
+      }
+    : {}
+
+  const count = await context.prisma.link.count({ where })
+  const links = await context.prisma.link.findMany({
+    where,
     skip: args.skip,
-    first: args.first,
-    orderBy: args.orderBy,
-  });
+    take: args.first,
+    orderBy: parseLinkOrderBy(args.orderBy),
+  })
+
   return {
     count,
     links,
   }
 }
 
-module.exports = {
+function parseLinkOrderBy(orderBy) {
+  if (!orderBy) {
+    return undefined
+  }
+
+  const [field, direction] = orderBy.split('_')
+  return {
+    [field]: direction.toLowerCase(),
+  }
+}
+
+export default {
   feed,
-};
+}

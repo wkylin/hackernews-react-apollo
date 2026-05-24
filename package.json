@@ -2,41 +2,13 @@
   "name": "hackernews-react-apollo",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "apollo-boost": "^0.4.7",
-    "apollo-link-context": "^1.0.19",
-    "apollo-link-ws": "^1.0.19",
-    "graphql": "^14.6.0",
-    "react": "^16.12.0",
-    "react-apollo": "^3.1.3",
-    "react-dom": "^16.12.0",
-    "react-router": "^5.1.2",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "3.4.0",
-    "subscriptions-transport-ws": "^0.9.16"
-  },
+  "packageManager": "pnpm@10.30.3",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "dev:frontend": "pnpm --dir frontend dev",
+    "dev:server": "pnpm --dir server start",
+    "build:frontend": "pnpm --dir frontend build",
+    "preview:frontend": "pnpm --dir frontend preview",
+    "prisma:generate": "pnpm --dir server generate",
+    "prisma:push": "pnpm --dir server prisma db push"
   }
 }
