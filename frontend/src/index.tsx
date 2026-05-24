@@ -1,11 +1,11 @@
-import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import { AUTH_TOKEN } from './constants'
+import { AuthProvider } from './auth'
 import './styles/index.css'
-import App from './components/App.jsx'
+import App from './components/App'
 
 const httpLink = new HttpLink({
   uri: import.meta.env.VITE_GRAPHQL_URL || 'http://localhost:4000',
@@ -26,10 +26,18 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 })
 
-createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
-  </BrowserRouter>
+const root = document.getElementById('root')
+
+if (!root) {
+  throw new Error('Root element not found')
+}
+
+createRoot(root).render(
+  <AuthProvider>
+    <BrowserRouter>
+      <ApolloProvider client={client}>
+        <App />
+      </ApolloProvider>
+    </BrowserRouter>
+  </AuthProvider>
 )

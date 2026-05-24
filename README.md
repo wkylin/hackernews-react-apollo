@@ -23,11 +23,12 @@ pnpm build:frontend
 pnpm preview:frontend
 ```
 
-Set the GraphQL endpoint with:
+Vite loads the GraphQL endpoint from mode-specific env files:
 
-```env
-VITE_GRAPHQL_URL=http://localhost:4000
-```
+- local dev: `frontend/.env.development` -> `http://localhost:4000`
+- production build: `frontend/.env.production` -> `https://api.wkylin.cn`
+
+The production frontend domain is `https://hacker.wkylin.cn`.
 
 ## Backend
 
@@ -39,4 +40,4 @@ pnpm prisma:push
 pnpm dev:server
 ```
 
-The backend listens on `http://localhost:4000`.
+The backend listens on `http://localhost:4000` locally and is intended to run behind `https://api.wkylin.cn` in production.

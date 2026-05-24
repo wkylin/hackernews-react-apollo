@@ -1,8 +1,9 @@
 import React from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { gql, useQuery } from '@apollo/client'
-import Link from './Link.jsx'
+import { ApolloCache, gql, useQuery } from '@apollo/client'
+import Link from './Link'
 import { LINKS_PER_PAGE } from '../constants'
+import type { FeedData, FeedVariables, LinkItem, VoteMutationData } from '../types'
 
 export const FEED_QUERY = gql`
   query FeedQuery($first: Int, $skip: Int, $orderBy: LinkOrderByInput) {
@@ -28,9 +29,9 @@ export const FEED_QUERY = gql`
   }
 `
 
-function getQueryVariables(pathname, pageParam) {
+function getQueryVariables(pathname: string, pageParam?: string): FeedVariables {
   const isNewPage = pathname.includes('new')
-  const page = parseInt(pageParam, 10)
+  const page = parseInt(pageParam || '1', 10)
   const skip = isNewPage ? (page - 1) * LINKS_PER_PAGE : 0
   const first = isNewPage ? LINKS_PER_PAGE : 100
   const orderBy = isNewPage ? 'createdAt_DESC' : null
@@ -38,7 +39,7 @@ function getQueryVariables(pathname, pageParam) {
   return { first, skip, orderBy }
 }
 
-function getLinksToRender(data, pathname) {
+function getLinksToRender(data: FeedData, pathname: string): LinkItem[] {
   if (pathname.includes('new')) {
     return data.feed.links
   }
@@ -51,10 +52,16 @@ function LinkList() {
   const navigate = useNavigate()
   const params = useParams()
   const variables = getQueryVariables(location.pathname, params.page)
-  const { loading, error, data } = useQuery(FEED_QUERY, { variables })
+  const { loading, error, data } = useQuery<FeedData, FeedVariables>(FEED_QUERY, {
+    variables,
+  })
 
-  const updateCacheAfterVote = (store, createVote, linkId) => {
-    const cacheData = store.readQuery({
+  const updateCacheAfterVote = (
+    store: ApolloCache<unknown>,
+    createVote: VoteMutationData['vote'],
+    linkId: string
+  ) => {
+    const cacheData = store.readQuery<FeedData, FeedVariables>({
       query: FEED_QUERY,
       variables,
     })
@@ -63,11 +70,11 @@ function LinkList() {
       return
     }
 
-    const links = cacheData.feed.links.map(link =>
+    const links = cacheData.feed.links.map((link: LinkItem) =>
       link.id === linkId ? { ...link, votes: createVote.link.votes } : link
     )
 
-    store.writeQuery({
+    store.writeQuery<FeedData, FeedVariables>({
       query: FEED_QUERY,
       data: {
         ...cacheData,
@@ -81,28 +88,29 @@ function LinkList() {
   }
 
   const nextPage = () => {
-    const page = parseInt(params.page, 10)
-    if (page <= data.feed.count / LINKS_PER_PAGE) {
+    const page = parseInt(params.page || '1', 10)
+    if (data && page <= data.feed.count / LINKS_PER_PAGE) {
       navigate(`/new/${page + 1}`)
     }
   }
 
   const previousPage = () => {
-    const page = parseInt(params.page, 10)
+    const page = parseInt(params.page || '1', 10)
     if (page > 1) {
       navigate(`/new/${page - 1}`)
     }
   }
 
-  if (loading) return <div>Fetching</div>
-  if (error) return <div>Error</div>
+  if (loading) return <div className="py-8 text-sm text-slate-500">Fetching</div>
+  if (error) return <div className="py-8 text-sm text-red-600">Error</div>
+  if (!data) return null
 
   const linksToRender = getLinksToRender(data, location.pathname)
   const isNewPage = location.pathname.includes('new')
-  const pageIndex = params.page ? (params.page - 1) * LINKS_PER_PAGE : 0
+  const pageIndex = params.page ? (parseInt(params.page, 10) - 1) * LINKS_PER_PAGE : 0
 
   return (
-    <div>
+    <div className="space-y-3">
       {linksToRender.map((link, index) => (
         <Link
           key={link.id}
@@ -112,13 +120,13 @@ function LinkList() {
         />
       ))}
       {isNewPage && (
-        <div className="flex ml4 mv3 gray">
-          <div className="pointer mr2" onClick={previousPage}>
+        <div className="flex items-center gap-3 pt-3 text-sm text-slate-500">
+          <button type="button" className="hover:text-slate-900" onClick={previousPage}>
             Previous
-          </div>
-          <div className="pointer" onClick={nextPage}>
+          </button>
+          <button type="button" className="hover:text-slate-900" onClick={nextPage}>
             Next
-          </div>
+          </button>
         </div>
       )}
     </div>
