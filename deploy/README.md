@@ -26,13 +26,36 @@ The production frontend build uses:
 VITE_GRAPHQL_URL=https://api.wkylin.cn
 ```
 
-Run the backend on the same ECS instance or an internal host, for example:
+Build the backend bundle and run it with PM2:
 
 ```bash
-HOST=127.0.0.1 PORT=4000 pnpm --dir server start
+pnpm --dir server build
 ```
 
-Then configure `api.wkylin.cn` to proxy to `http://127.0.0.1:4000/`.
+Upload this minimal server set:
+
+```text
+server/dist/
+server/package.json
+server/pnpm-lock.yaml or root pnpm-lock.yaml
+server/.env
+server/ecosystem.config.cjs
+```
+
+Install production dependencies on the server:
+
+```bash
+pnpm install --prod
+```
+
+Start with PM2:
+
+```bash
+pm2 start ecosystem.config.cjs
+pm2 save
+```
+
+Then configure `api.wkylin.cn` to proxy to `http://127.0.0.1:4000/` or run the bundle on that port.
 Example Nginx config: `deploy/nginx/api.conf`.
 
 The backend also needs:

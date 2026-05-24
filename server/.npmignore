@@ -1,0 +1,8 @@
+src
+prisma
+*.ts
+tsconfig*.json
+node_modules
+dist
+.env
+*.log
