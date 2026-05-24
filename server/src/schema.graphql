@@ -2,6 +2,8 @@ scalar DateTime
 
 type Query {
   info: String!
+  me: User
+  user(id: String!): User
   feed(filter: String, skip: Int, first: Int, orderBy: LinkOrderByInput): Feed!
 }
 

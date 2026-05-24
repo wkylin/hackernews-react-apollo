@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { createServer } from 'node:http'
-import { createApp } from './app.js'
+import { createApp } from './app.ts'
 
 const yoga = createApp()
 const host = process.env.HOST || '127.0.0.1'

@@ -1,8 +1,33 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { APP_SECRET, getUserId } from '../utils.js'
+import { APP_SECRET, getUserId } from '../utils.ts'
+import type { GraphQLContext, ResolverParent } from '../types.ts'
 
-async function post(parent, { url, description }, context) {
+type PostArgs = {
+  url: string
+  description: string
+}
+
+type SignupArgs = {
+  email: string
+  password: string
+  name: string
+}
+
+type LoginArgs = {
+  email: string
+  password: string
+}
+
+type VoteArgs = {
+  linkId: string
+}
+
+async function post(
+  parent: ResolverParent,
+  { url, description }: PostArgs,
+  context: GraphQLContext
+) {
   const userId = getUserId(context)
   const link = await context.prisma.link.create({
     data: {
@@ -20,7 +45,7 @@ async function post(parent, { url, description }, context) {
   return link
 }
 
-async function signup(parent, args, context) {
+async function signup(parent: ResolverParent, args: SignupArgs, context: GraphQLContext) {
   const password = await bcrypt.hash(args.password, 10)
   const user = await context.prisma.user.create({
     data: { ...args, password },
@@ -34,7 +59,7 @@ async function signup(parent, args, context) {
   }
 }
 
-async function login(parent, args, context) {
+async function login(parent: ResolverParent, args: LoginArgs, context: GraphQLContext) {
   const user = await context.prisma.user.findUnique({
     where: { email: args.email },
   })
@@ -53,7 +78,7 @@ async function login(parent, args, context) {
   }
 }
 
-async function vote(parent, args, context) {
+async function vote(parent: ResolverParent, args: VoteArgs, context: GraphQLContext) {
   const userId = getUserId(context)
   const existingVote = await context.prisma.vote.findUnique({
     where: {
