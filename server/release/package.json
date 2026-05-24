@@ -1,0 +1,33 @@
+{
+  "name": "hackernews-node",
+  "version": "1.0.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "build": "tsc --noEmit && node scripts/build.mjs",
+    "start:prod": "node dist/index.js",
+    "prisma": "prisma",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "generate": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/adapter-mariadb": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.7",
+    "graphql": "^16.11.0",
+    "graphql-yoga": "^5.13.0",
+    "jsonwebtoken": "^8.2.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.10.1",
+    "esbuild": "^0.27.7",
+    "prisma": "^7.8.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

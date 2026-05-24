@@ -35,12 +35,12 @@ pnpm --dir server build
 Upload this minimal server set:
 
 ```text
-server/dist/
-server/package.json
-server/pnpm-lock.yaml or root pnpm-lock.yaml
-server/.env
-server/ecosystem.config.cjs
+server/release/
 ```
+
+`server/release/` is created by `pnpm --dir server build` and contains `dist/`, `package.json`, `.env.example`, and `ecosystem.config.cjs`.
+
+Do not package the real `.env` into release artifacts. Keep it on the server and update it manually when configuration changes.
 
 Install production dependencies on the server:
 
