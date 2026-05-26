@@ -58,6 +58,23 @@ pm2 save
 Then configure `api.wkylin.cn` to proxy to `http://127.0.0.1:4000/` or run the bundle on that port.
 Example Nginx config: `deploy/nginx/api.conf`.
 
+If `api.wkylin.cn` returns 502, check in this order on the server:
+
+```bash
+pm2 status
+pm2 logs hackernews-api --lines 100
+curl -i http://127.0.0.1:4000/health
+curl -i http://api.wkylin.cn/health
+nginx -t
+systemctl reload nginx
+```
+
+Interpretation:
+
+- `curl 127.0.0.1:4000/health` fails: PM2 app is not running, crashed, or listening on a different host/port.
+- local health passes but `api.wkylin.cn/health` fails: Nginx `proxy_pass`, DNS, security group, or server block is wrong.
+- health passes but GraphQL fails: inspect backend logs and database connectivity.
+
 The backend also needs:
 
 ```env
